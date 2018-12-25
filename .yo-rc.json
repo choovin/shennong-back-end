@@ -1,0 +1,42 @@
+{
+  "generator-jhipster": {
+    "applicationType": "monolith",
+    "gitCompany": "",
+    "baseName": "shennongApplication",
+    "packageName": "cn.com.sailfish.shennongapplication",
+    "packageFolder": "cn/com/sailfish/shennongapplication",
+    "serverPort": 8080,
+    "serviceDiscoveryType": false,
+    "authenticationType": "jwt",
+    "uaaBaseName": "../uaa",
+    "cacheProvider": "ehcache",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "prodDatabaseType": "mysql",
+    "searchEngine": "elasticsearch",
+    "enableSwaggerCodegen": "true",
+    "messageBroker": false,
+    "buildTool": "maven",
+    "useSass": false,
+    "clientPackageManager": "npm",
+    "testFrameworks": [
+      "gatling"
+    ],
+    "enableTranslation": true,
+    "nativeLanguage": "zh-cn",
+    "languages": [
+      "en",
+      "zh-cn"
+    ],
+    "clientFramework": "angularX",
+    "jhiPrefix": "jhi",
+    "jhipsterVersion": "5.7.2",
+    "jwtSecretKey": "Y2QzNWMwM2E3NjgyMTk0YjQxODNhNmI0Y2MyZGJiMTM1ZTExMzY1NjY0YmJjMmViOTE4MzA5ZGM3MjZhNzhhOWVmZjA2M2Q2NTRiNTdkMjA4ODcwZGYwOWMzOGYzZGYxYmI3YjgyMGRiN2RmZjU0ZTdkNzVlNTMzMzNjZjk1N2E=",
+    "otherModules": []
+  },
+  "git-provider": "GitHub",
+  "git-company": "choovin",
+  "repository-name": "shennong-back-end"
+}
