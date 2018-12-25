@@ -1,0 +1,375 @@
+entity user {     // (user) 用户表,表名user,如无指定@(主键)则默认创建id字段并设为主键
+	username String,       // (username) [50] <> 用户姓名,长度大于1小于50
+    nickname String,       // (nickname) [50] 用户昵称,长度大于1小于50
+    password String,       // (password) [255] <> 密码,长度255,不为空
+    userImage String,      // (user_image) 用户头像
+    mobilePhone String,    // (mobile_phone) [11] <> ^ 用户的手机号码, 长度是11,手机号码不为空且唯一
+    email String,          // (email) 邮箱
+    locked Integer,        // (locked) 状态 0:正常 1:锁定
+    authority Integer,     // (authority) <4> 用户权限: 1 系统管理员 2 管理员 4 普通用户, 默认值是4
+    token String           // (token) 登录生成的token信息
+}
+
+entity DataCenterUser {    // (data_center_user) 数据认证中心用户表,表名data_center_user,如无指定@(主键)则默认创建id字段并设为主键
+    idCard String,              // (id_card) [255] <> ^ 用户的证件号码,证件号码号码唯一
+    idCardType Integer,         // (id_card_type) 证件类型 0:身份证,1:护照,2:军官证,3:其他
+    realname String,            // (realname) [50] <> 真实姓名,长度大于1小于50
+    mobilePhone String,         // (mobile_phone) [11] <>  手机号码, 长度是11,手机号码不为空
+    gender Integer,             // (gender) 性别 0未知,1:男 2:女 
+    education String,           // (education) 学历
+    job String,                 // (job) 岗位
+    age Integer,                // (age) 年龄
+    address String,             // (address) 地址
+    addTime Instant,            // (add_time) 登记时间
+    lastModifyTime Instant,     // (last_modify_time) 最后修改时间
+    status Integer,             // (status) 信息状态,0:已注销 1:未注销
+    dataSourcesType Integer,    // (data_sources_type) 数据来源 0:旧系统,1:旧移动系统,2:新系统,3:新移动系统,4:神农系统录入
+    memberType Integer,         // (member_type) 组织成员身份 如：1 正式党员 2 预备党员 
+    joinTime Instant,           // (join_time) 加入组织时间
+    quitTime Instant            // (quit_time) 退出组织时间
+}
+
+entity RoleType {   // (role_type) 角色类型表,表名role_type,如无指定@(主键)则默认创建id字段并设为主键
+    role Integer    // (role) 1 村委 2 房东 4 二房东 8 租客 16 党员 
+}
+
+relationship OneToOne {
+	user{dataCenterUser} to DataCenterUser  // (data_center_user_id) 指定User关联的字段为data_center_user_id,代表用户认证后关联的身份信息
+}
+
+entity Organization {  // (organization) 组织信息表,表名organization,如无指定@(主键)则默认创建id字段并设为主键
+    name String,            // (name) [50] <> ^ 组织名称,长度大于1小于50,不为空且唯一
+    address String,         // (address) [255] <> 组织地址,长度大于1小于255,不为空
+    master String,          // (master) 组织机构的管理者如：组织书记
+    telephone String,       // (telephone) 联系电话
+    description String,     // (description) 描述
+    image String            // (image) 图片
+}
+
+relationship ManyToOne {
+    DataCenterUser{organization} to Organization    // (organization_id) 指定data_center_user关联的字段为organization_id,代表用户所属的组织机构,允许为空
+}
+
+relationship ManyToOne {
+	RoleType{dataCenterUser} to DataCenterUser // (data_center_user_id) 指定RoleType关联的字段为data_center_user_id,代表用户的角色
+}
+
+entity CmsSystem {    // (cms_system) 系统设置表,表名cms_system,如无指定@(主键)则默认创建id字段并设为主键
+    name String,     // (name) 系统名称
+    code String,     // (code) 别名
+    description String,   // (description) 描述
+    orders Integer,        // (orders) 排序
+    image String           // (image) 图片
+}
+
+entity CmsSetting {  // (cms_setting) 网站配置表,表名cms_setting
+    settingKey String,   // (setting_key) 主键
+    settingValue String   // (setting_value) 取值
+}
+
+entity CmsArticle {    // (cms_article) 文章表,表名cms_article,如无指定@(主键)则默认创建id字段并设为主键
+    title String,   		// (title) [255] <> 标题,长度大于1小于255,不为空
+    fromAuthor String,          // (author) 文章原作者
+    fromUrl String,         // (from_url) 转载来源网址
+    image String,           // (image) 封面图
+    keywords String,        // (keywords) 关键字
+    description String,     // (description) 简介
+    type Integer,           // (type) 类型 1:普通 2:热门
+    bIsAllowComments Boolean,  // (b_is_allowComments) 是否允许评论
+    content TextBlob,   	// (content) 内容
+    commentCount Integer,   // (comment_count) 评论数
+    readCount Integer,     // (read_count) 阅读数
+    likeCount Integer,      // (like_count) 点赞数
+    status Integer,         // (status) 文章状态, 0:审核失败,1:待审核,2:已发布,3:回收站
+    reason String,          // (reason) 审核失败原因 
+    top Integer,            // (top) 置顶等级
+    orders Long,            // (orders) 排序
+    lastReplyTime Instant   // (last_reply_time) 最后回复时间
+}
+
+entity CmsCategory {    // (cms_category) 类目表,表名cms_category,如无指定@(主键)则默认创建id字段并设为主键
+    name String,          // (name) 类目名称
+    level Integer,        // (level) 类目层级,层级不超过三级
+    description String,   // (description) 类目描述
+    icon String,          // (icon) 图标
+    type Integer,         // (type) 类型 1:普通 2:热门
+    alias String,         // (alias) 别名
+    orders Long          // (orders) 排序
+}
+
+entity CmsTag {        // (cms_tag) 标签表,表名cms_tag,如无指定@(主键)则默认创建id字段并设为主键
+    name String,         // (name) 名称
+    description String,  // (description) 描述
+    icon String,         // (icon) 图标
+    type Integer,        // (type) 类型 1:普通 2:热门
+    alias String,        // (alias) 别名
+    orders Long          // (orders) 排序
+}
+
+entity CmsTopic {  // (cms_topic) 专题表,表名cms_topic,如无指定@(主键)则默认创建id字段并设为主键
+    title String,         // (title) 标题
+    description String,   // (description) 描述
+    url String           // (url) 链接  
+}
+
+relationship ManyToOne {
+	CmsArticle{author} to DataCenterUser  // (author_id) 指定CmsArticle关联的字段为author_id,代表文章的创建者  
+}
+
+relationship ManyToOne {
+	CmsArticle{replay} to DataCenterUser  // (replay_id) 指定CmsArticle关联的字段为replay_id,代表意见反馈的回复者 
+}
+
+relationship ManyToOne {
+    CmsArticle{category} to CmsCategory    // (category_id) 指定CmsArticle关联的字段为category_id,表示文章所属的类目
+}
+
+relationship ManyToOne {
+    CmsCategory{parent} to CmsCategory  // (parent_id) 指定CmsCategory关联的字段为parent_id,表示上级类目,允许为空,当该字段为空时表示该类目为最顶级类目
+}
+
+relationship ManyToMany {  // (cms_category_tag) 类目标签关联表,表名cms_category_tag,如无指定@(主键)则默认创建id字段并设为主键
+    CmsCategory to CmsTag   // (category_id) (tag_id) 指定CmsCategoryTag关联的字段为category_id,tag_id,表示类目关联的标签
+}
+
+relationship ManyToMany {   // (cms_article_tag) 文章标签关联表,表名cms_article_tag,如无指定@(主键)则默认创建id字段并设为主键
+    CmsArticle to CmsTag     // (article_id) (tag_id) 指定CmsArticleTag关联的字段为article_id,tag_id,表示文章关联的标签 
+}
+
+relationship ManyToMany {   // (cms_article_topic) 文章专题关联表,表名cms_article_topic,如无指定@(主键)则默认创建id字段并设为主键
+    CmsArticle to CmsTopic   // (article_id) (topic_id) 指定CmsArticleTopic关联的字段为article_id,topic_id,表示文章所属的专题 
+}
+
+entity CmsComment {   // (cms_comment) 评论表,表名cms_comment,如无指定@(主键)则默认创建id字段并设为主键
+    content String,    // (content) 评论内容
+    reason String,    // (reason) 审核失败原因 
+    status Integer,   // (status) 评论状态  0:审核失败,1:待审核,2:已发布,3:回收站
+    ip String,        // 评论人ip
+    agent String      // 评论人终端信息
+}
+
+relationship ManyToOne {
+    CmsComment{parent} to CmsComment   // (parent_id) 指定CmsComment关联的字段为parent_id,表示评论的上级评论
+}
+
+relationship ManyToOne {   
+	CmsComment{article} to CmsArticle  // (article_id) 指定Comment关联的字段为article_id,代表评论的文章 
+}
+
+relationship ManyToOne {
+	CmsComment{author} to DataCenterUser  // (author_id) 指定Comment关联的字段为author_id,代表评论的创建者  
+}
+
+entity CmsLike {   //  (cms_like) 点赞表，表名cms_like,如无指点@(主键)则默认创建id字段并设为主键
+    ip String,      // (ip) 点赞人的ip地址
+    agent String    // (agent) 点赞人的终端信息
+}
+
+relationship ManyToOne {
+	CmsLike{likeUser} to DataCenterUser  // (like_user_id) 指定CmsLike关联的字段为like_user_id,代表点赞的用户
+}
+
+relationship ManyToOne {
+	CmsLike{article} to CmsArticle  // (article_id) 指定CmsLike关联的字段为article_id,代表用户点赞的文章
+}
+
+entity ProductsPricing {    // (products_pricing) 产品定价表,表名products_pricing,如无指定@(主键)则默认创建id字段并设为主键
+    title String,                // (title) <> 产品定价标题
+    month String,                // (month) 定价月份
+    approvalStatus Boolean,      // (approval_status) 审核状态  0:未通过 1:已通过
+    status Boolean               // (status) 完成状态  0:未完成 1:已完成
+}
+
+entity MonthlyStatement {   // (monthly_statement ) 月账单表,表名monthly_statement,如无指定@(主键)则默认创建id字段并设为主键
+    payMoney Float,   // (pay_money) 费用
+    type Integer,      // (type) 缴费类型 1:党费 2:卫生费
+    entityId Long   // (entity_id) 缴费类型为党费时是应缴费的人,类型为卫生费时是对应的卫生个体
+}
+
+entity PayRecord {   // (pay_record) 党费卫生费缴费记录表,表名pay_record,如无指定@(主键)则默认创建id字段并设为主键
+    payDate Instant,  // (pay_date)  缴费时间
+    payMoney Float,   // (pay_money) 应缴费用
+    payWay Integer,   // (pay_way) 缴费方式,1线上 2线下
+    status Boolean,   // (status) 缴费状况，0未缴费，1已缴费
+    month String,     // (month) 缴费月份
+    type Integer,      // (type) 缴费类型 1:党费 2:卫生费
+    entityId Long   // (entity_id) 缴费类型为党费时是应缴费的人,类型为卫生费时是对应的卫生个体
+}
+
+entity PayOrderInfo{    // (pay_order_info) 订单信息表，表名是pay_order_info
+    orderId String,     // (order_id) <> ^ 支付订单的订单号 
+    appid String,       // (appid) 应用APPID
+    mchId String,       // (mch_id) 商户号
+    deviceInfo String,  // (device_info) 微信支付分配的终端设备号
+    payChannel String,  // (pay_channel) 支付使用的第三方支付渠道如 weixin zhifubao
+    amount Integer,     // (amount) 订单总金额, 单位为对应币种的最小货币单位，例如：人民币为分（如订单总金额为 1元，此处请填100）
+    payStatus Integer,  // (pay_status) 订单支付的状态 0 已经支付 1 未支付 2 支付失败
+    currency String     // (currency) <cny> 三位 ISO 货币代码，人民币 cny  默认是cny
+}
+
+relationship ManyToOne {
+    MonthlyStatement{productsPricing} to ProductsPricing     // (products_pricing_id) 指定monthlyStatement关联的字段为products_pricing_id,代表账单对应的定价表
+}
+
+relationship ManyToOne {
+    ProductsPricing{author} to DataCenterUser  // (author_id) 指定Audit关联的字段为author_id,表示定价表的创建者 
+}
+
+relationship ManyToOne {
+    ProductsPricing{review} to DataCenterUser  // (review_id) 指定产品定价表关联的字段为review_id,表示定价表的最终审核者
+}
+
+relationship ManyToOne {
+	PayRecord{payUser} to DataCenterUser    // (data_center_user_id) 指定PayRecord关联的字段为data_center_user_id,代表缴费的用户
+}
+
+relationship ManyToOne{
+    PayRecord{payOrderInfo} to PayOrderInfo // (pay_order_info_id) 指定PayRecord关联的字段为pay_order_info_id,表示缴费记录关联的微信订单
+}
+
+entity DataCenterHouseInfo {     // (data_center_house_info) 房屋信息表,表名data_center_house_info,如无指定@(主键)则默认创建id字段并设为主键
+    resideProvince String,    // (reside_province) 所属省份
+    resideCity String,        // (reside_city) 所属城市
+    resideDist String,        // (reside_dist) 所属行政区县
+    resideTown String,        // (reside_town) 街(镇)
+    residePoliceStation String,  // (reside_police_station) 所属派出所
+    resideVillage String,      // (reside_village) 所属居(村)委会
+    resideStreet String,       // (reside_street) 所属街(路巷)
+    resideHouseNumber String,  // (reside_house_number) 所属门(楼)牌号
+    roomCount Integer,         // (room_count) 房间套数
+    houseType Integer,          // (house_type) 房屋类型 1:出租屋 2:自购房屋 3:自建房屋 4:整栋租赁
+    addTime Instant,            // (add_time) 登记时间
+    lastModifyTime Instant      // (last_modify_time) 最后修改时间
+}
+
+entity HouseRent {    // (house_rent) 房屋租赁表,表名house_rent,如无指定@(主键)则默认创建id字段并设为主键
+    rentTime Instant,     // (rent_time) 入住日期
+    endTime Instant,      // (end_time) 到租日期
+    roomNumber String     // (room_number) 房间号
+}
+
+entity Area {    // (area) 卫生片区表,表名area,如无指定@(主键)则默认创建id字段并设为主键
+ 	name String,        // (name) [50] <> ^ 片区名,长度大于1小于50,不为空且唯一
+    totalIntegral Long,  // (total_integral) 片区总积分
+    description String   // (description) 片区描述
+}
+
+entity Personal {   // (personal) 卫生个体表,表名personal,如无指定@(主键)则默认创建id字段并设为主键
+    name String               // (name) 卫生个体名
+    integral Long,            // (integral) 卫生个体积分
+    responsibility String     // (responsibility) 三包责任状
+}
+
+entity PersonalScoreRecord {   // (personal_integral) 卫生个体积分记录表,表名personal_integral,如无指定@(主键)则默认创建id字段并设为主键
+ 	title String,           // (title) 积分记录标题
+    score Integer,   		// (score) 分值
+    type Integer,    		// (type) 加扣分类型，0加分，1扣分
+    status Boolean,         // (status) 是否执行,0未执行,1已执行
+    excuteTime Instant      // (excute_time) 执行时间
+}
+
+relationship ManyToOne {
+	Personal{area} to Area // (area_id) 指定Personal关联的字段为area_id,代表卫生个体所属的片区  
+}
+
+relationship ManyToOne {
+	DataCenterHouseInfo{personal} to Personal  // (personal_id) 指定HouseInfo关联的字段为personal_id,代表房屋所属的卫生个体
+}
+
+relationship ManyToOne {
+	DataCenterHouseInfo{landlordUser} to DataCenterUser   // (landlord_user_id) 指定HouseInfo关联的字段为landlord_user_id,代表房屋的房东
+}
+
+relationship ManyToOne {
+	DataCenterHouseInfo{managerUser} to DataCenterUser   // (manager_user_id) 指定HouseInfo关联的字段为manager_user_id,代表房屋的管理者
+}
+
+relationship ManyToOne {
+	HouseRent{houseInfo} to DataCenterHouseInfo  // (house_info_id) 指定HouseRent关联的字段为house_info_id,代表租赁的房屋 
+}
+
+relationship ManyToOne {
+	HouseRent{rentUser} to DataCenterUser  // (rent_user_id) 指定HouseRent关联的字段为rent_user_id,代表租赁的用户
+}
+
+relationship ManyToOne {
+	PersonalScoreRecord{personal} to Personal  // (personal_id) 指定PersonalScoreRecord关联的字段为personal_id,代表卫生积分记录所属的卫生个体
+}
+
+relationship ManyToOne {
+    PersonalScoreRecord{createUser} to DataCenterUser  // (create_user_id) 指定PersonalScoreRecord关联的字段为create_user_id,代表卫生积分记录的创建者
+}
+
+relationship ManyToOne {
+    PersonalScoreRecord{excuteUser} to DataCenterUser  // (excute_user_id) 指定PersonalScoreRecord关联的字段为excute_user_id,代表卫生积分记录的执行者
+}
+
+entity File {  // (file) 文件信息表,表名file,如无指定@(主键)则默认创建id字段并设为主键
+    type String,    // (type) 文件类型,png,jpg,avi,mp3
+    path String,    // (path) 文件路径
+    title String,   // (title) 文件标题
+    size Long,      // (size) 文件大小
+    keyName String  // (key_name) [128] <> ^ 文件的关键key
+}
+
+entity FileReference {      // (file_reference) 文件信息引用表,表名file_reference,如无指定@(主键)则默认创建id字段并设为主键
+}
+
+relationship ManyToOne {
+    FileReference{article} to CmsArticle // (article_id) 指定FileReference关联的字段为article_id,代表文件被某个文章引用
+}
+
+relationship ManyToOne {
+    FileReference{file} to File // (file_id) 指定FileReference关联的字段为file_id,代表被引用的文件
+}
+
+entity Notice {   // (notice) 通知信息表,表名notice,如无指定@(主键)则默认创建id字段并设为主键
+    type Integer,         // (type) 通知类型,1通报,2通知
+    title String,         // (title) 标题
+    content String,       // (content) 内容
+    sendType Integer      // (send_type) 发送方式,1:短信 2:APP推送 3:全部
+}
+
+relationship ManyToOne {
+    FileReference{notice} to Notice  // (notice) 指定FileReference关联的字段为notice_id,代表文件被某个通知引用
+}
+
+relationship ManyToOne {   
+	Notice{author} to DataCenterUser    // (author_id) 指定Notice关联的字段为author_id, 代表通知的创建者
+}
+
+relationship OneToOne {
+	Notice{personalScoreRecord} to PersonalScoreRecord   // (personal_integral_id) 指定Notice关联的字段为personal_integral_id,代表通报关联的卫生个体积分
+}
+
+entity SmsRecord {   // (sms_record) 短信发送记录表,表名sms_record,如无指点@(主键)则默认创建id字段并设为主键
+    params String,       // (params) 参数
+    purposePhone String, // (purpose_phone) 目的手机号
+    status Boolean       // (status) 是否发送成功,0失败 1成功
+}
+
+entity Resource {  // (resource) 资源访问控制表,表名resource,如无指点@(主键)则默认创建id字段并设为主键
+    name String,   // (name) 名称
+    type Integer,   // (type) 类型 1:目录,2:菜单,3:按钮
+    permissionValue String,  // (permission_value) 权限值
+    uri String,     // (uri) 路径
+    icon String,    // (icon) 图标
+    status Integer,  // (status) 状态 0:禁止 1:正常
+    orders Long      // (orders) 排序
+}
+
+entity RoleResource {  // (role_resource) 角色资源关联表,表名role_resource,如无指点@(主键)则默认创建id字段并设为主键
+    role String,   // (role) 角色名,包含业务角色和系统角色
+    bIsAccess Boolean  // (b_is_access) 是否允许访问
+}
+
+relationship ManyToOne {
+    RoleResource{resource} to Resource   // (resource_id) 指定RoleResource关联的字段为resource_id,表示角色对应能否访问的资源路径
+}
+
+entity AreaCount {  // (area_count) 片区每天的积分记录表，主要用于各片区的积分统计功能，规定每天某一个时刻记录各片区今天的积分
+    areaId Long,   // (area_id) 片区ID
+    name String,   // (name) 片区名
+    integral Long,    // (integral) 片区积分
+    time String    // (time) 时间（格式如：2018-12-19）
+}
